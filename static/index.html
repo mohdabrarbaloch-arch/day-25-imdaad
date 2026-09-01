@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Imdaad — Pakistan's blood donation network. Find donors for urgent blood requests in seconds." />
+  <title>Imdaad (امداد) — Blood Donation Network</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="drop">🩸</span>
+      <span class="brand-name">Imdaad</span>
+      <span class="brand-urdu">امداد</span>
+    </div>
+    <nav id="nav-auth">
+      <button class="btn ghost" id="btn-login">Login</button>
+      <button class="btn primary" id="btn-register">Register</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- LANDING -->
+    <section id="view-landing" class="view">
+      <div class="hero">
+        <h1>Be someone's <span class="accent">imdaad</span> today.</h1>
+        <p class="sub">
+          Every day in Pakistan, families call dozens of people looking for blood.
+          Imdaad connects verified donors with urgent requests — in seconds, not hours.
+        </p>
+        <div class="stats-row" id="stats-row">
+          <div class="stat-card"><span class="stat-num" id="stat-donors">–</span><span>Donors</span></div>
+          <div class="stat-card"><span class="stat-num" id="stat-eligible">–</span><span>Eligible now</span></div>
+          <div class="stat-card"><span class="stat-num" id="stat-open">–</span><span>Open requests</span></div>
+          <div class="stat-card"><span class="stat-num" id="stat-fulfilled">–</span><span>Fulfilled</span></div>
+        </div>
+        <div class="cta-row">
+          <button class="btn primary big" id="btn-browse">Browse open requests</button>
+          <button class="btn outline big" id="btn-register-donor">Register as donor</button>
+        </div>
+      </div>
+
+      <div class="compat-panel">
+        <h2>🩸 Who can donate to whom?</h2>
+        <p class="muted">Pick a patient's blood group — we'll show every compatible donor group.</p>
+        <div class="blood-picker" id="compat-picker"></div>
+        <div id="compat-result" class="compat-result"></div>
+      </div>
+
+      <section class="requests-section">
+        <h2>Open requests</h2>
+        <div id="public-requests" class="cards"></div>
+        <p class="muted" id="public-requests-empty" hidden>No open requests right now. Be the first to post one.</p>
+      </section>
+    </section>
+
+    <!-- AUTH -->
+    <section id="view-auth" class="view" hidden>
+      <div class="auth-card">
+        <h2 id="auth-title">Login</h2>
+        <form id="auth-form">
+          <input type="email" id="auth-email" placeholder="Email" required autocomplete="email" />
+          <input type="password" id="auth-password" placeholder="Password" required minlength="8" autocomplete="current-password" />
+          <select id="auth-role" hidden>
+            <option value="donor">Donor</option>
+            <option value="requester">Requester (hospital / family)</option>
+            <option value="admin">Admin</option>
+          </select>
+          <input type="text" id="auth-name" placeholder="Full name" hidden />
+          <input type="text" id="auth-phone" placeholder="Phone (03XX…)" hidden />
+          <input type="text" id="auth-city" placeholder="City" hidden />
+          <div id="auth-error" class="error" hidden></div>
+          <button class="btn primary block" type="submit" id="auth-submit">Login</button>
+        </form>
+        <p class="muted center">
+          <a href="#" id="auth-toggle">New here? Create an account</a>
+        </p>
+      </div>
+    </section>
+
+    <!-- APP (logged in) -->
+    <section id="view-app" class="view" hidden>
+      <div class="app-header">
+        <h2>Assalam-o-Alaikum, <span id="user-name">–</span> 👋</h2>
+        <div class="role-pill" id="user-role">donor</div>
+      </div>
+
+      <!-- DONOR -->
+      <div id="donor-panel" hidden>
+        <div class="panel-card">
+          <h3>Your donor profile</h3>
+          <div id="donor-profile-view" class="profile-view">
+            <p class="muted">No profile yet — create one to start offering blood.</p>
+          </div>
+          <form id="donor-profile-form" class="grid-form" hidden>
+            <select id="dp-blood" required>
+              <option value="">Blood group…</option>
+              <option>A+</option><option>A-</option><option>B+</option>
+              <option>B-</option><option>AB+</option><option>AB-</option>
+              <option>O+</option><option>O-</option>
+            </select>
+            <label class="check"><input type="checkbox" id="dp-available" checked /> Available to donate</label>
+            <textarea id="dp-notes" rows="2" placeholder="Medical notes (optional)"></textarea>
+            <button class="btn primary" type="submit" id="dp-submit">Save profile</button>
+          </form>
+        </div>
+
+        <div class="panel-card">
+          <h3>Open requests you can help with</h3>
+          <div id="donor-requests" class="cards"></div>
+        </div>
+      </div>
+
+      <!-- REQUESTER -->
+      <div id="requester-panel" hidden>
+        <div class="panel-card">
+          <h3>Post a blood request</h3>
+          <form id="request-form" class="grid-form">
+            <input type="text" id="rq-patient" placeholder="Patient name" required minlength="2" />
+            <select id="rq-blood" required>
+              <option value="">Blood group needed…</option>
+              <option>A+</option><option>A-</option><option>B+</option>
+              <option>B-</option><option>AB+</option><option>AB-</option>
+              <option>O+</option><option>O-</option>
+            </select>
+            <input type="number" id="rq-units" placeholder="Units (1–20)" min="1" max="20" value="1" required />
+            <input type="text" id="rq-city" placeholder="City" required minlength="2" />
+            <input type="text" id="rq-hospital" placeholder="Hospital (optional)" />
+            <select id="rq-urgency">
+              <option value="normal">Normal</option>
+              <option value="urgent">Urgent</option>
+              <option value="emergency">Emergency</option>
+            </select>
+            <textarea id="rq-note" rows="2" placeholder="Notes (optional)"></textarea>
+            <button class="btn primary" type="submit">Post request</button>
+          </form>
+        </div>
+
+        <div class="panel-card">
+          <h3>My requests</h3>
+          <div id="my-requests" class="cards"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Imdaad (امداد) — built for Pakistan. Every donation saves a life. 🩸</p>
+  </footer>
+
+  <div id="toast" class="toast" hidden></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>
